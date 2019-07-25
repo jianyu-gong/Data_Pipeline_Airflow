@@ -13,14 +13,18 @@ class DataQualityOperator(BaseOperator):
                  # conn_id = your-connection-name
                  redshift_conn_id="",
                  table="",
+                 retry_times=3,
+                 dq_checks=[
+                {'check_sql': "SELECT COUNT(*) FROM users WHERE userid is null", 'expected_result': 0},
+                {'check_sql': "SELECT COUNT(*) FROM songs WHERE songid is null", 'expected_result': 0}
+                 ],
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         self.table = table
         self.redshift_conn_id = redshift_conn_id
-        # Map params here
-        # Example:
-        # self.conn_id = conn_id
+        self.retry_times=retry_times
+        self.dq_checks=dq_checks
 
     def execute(self, context):
         self.log.info('DataQualityOperator not implemented yet')

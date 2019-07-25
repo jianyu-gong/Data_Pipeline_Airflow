@@ -6,20 +6,21 @@ class LoadDimensionOperator(BaseOperator):
 
     ui_color = '#80BD9E'
 
+    insert_sql = """
+        INSERT INTO {}
+        {}
+        ;
+    """
+
     @apply_defaults
     def __init__(self,
-                 # Define your operators params (with defaults) here
-                 # Example:
-                 # conn_id = your-connection-name
-                 redshift_conn_id="",
-                 table="",
-                 sql_source="",
-                 *args, **kwargs):
+                redshift_conn_id="",
+                table="",
+                delete_load=False,
+                sql_source="",
+                *args, **kwargs):
 
         super(LoadDimensionOperator, self).__init__(*args, **kwargs)
-        # Map params here
-        # Example:
-        # self.conn_id = conn_id
         self.redshift_conn_id = redshift_conn_id
         self.table = table
         self.delete_load = delete_load
@@ -28,8 +29,9 @@ class LoadDimensionOperator(BaseOperator):
     def execute(self, context):
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
-        self.log.info("Deleteing existing tables from destination Redshift table")
-        redshift.run("DELETE FROM {}".format(self.table))
+        if self.delete_load:
+            self.log.info("Clearing data from destination Redshift table")
+            redshift.run("DELETE FROM {}".format(self.table))
 
         formatted_sql = LoadDimensionOperator.insert_sql.format(
             self.table,

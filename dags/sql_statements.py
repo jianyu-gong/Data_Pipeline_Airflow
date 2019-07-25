@@ -17,7 +17,7 @@ DROP_TABLE_SONGPLAYS = """
 
 CREATE_TABLE_SONGPLAYS = """
     CREATE TABLE IF NOT EXISTS public.songplays (
-        songplay_id INT IDENTITY(0,1) PRIMARY KEY SORTKEY,
+        songplay_id VARCHAR(255) PRIMARY KEY SORTKEY,
         start_time TIMESTAMP NOT NULL REFERENCES time(start_time),
         user_id INT NOT NULL REFERENCES users(user_id),
         level VARCHAR(255),
@@ -46,8 +46,7 @@ DROP_TABLE_STAGING_EVENTS = """
 """
 
 CREATE_TABLE_STAGING_EVENTS = ("""
-    CREATE TABLE public.staging_events(
-        event_id INT IDENTITY(0,1) PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS public.staging_events(
         artist VARCHAR(255),
         auth VARCHAR(255),
         firstName VARCHAR(255),
@@ -56,10 +55,10 @@ CREATE_TABLE_STAGING_EVENTS = ("""
         lastName VARCHAR(255),
         length DOUBLE PRECISION, 
         level VARCHAR(50),
-        location VARCHAR(255),	
+        location VARCHAR(255),
         method VARCHAR(25),
-        page VARCHAR(35),	
-        registration BIGINT,	
+        page VARCHAR(35),
+        registration BIGINT,
         session_id BIGINT,
         song VARCHAR(255),
         status INT,	
@@ -73,7 +72,7 @@ DROP_TABLE_STAGING_SONGS = """
 """
 
 CREATE_TABLE_STAGING_SONGS = """
-    CREATE TABLE public.staging_songs(
+    CREATE TABLE IF NOT EXISTS public.staging_songs(
         num_songs INT,
         artist_id VARCHAR(100),
         artist_latitude DOUBLE PRECISION,

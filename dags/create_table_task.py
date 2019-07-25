@@ -5,14 +5,15 @@ from airflow.operators.postgres_operator import PostgresOperator
 import sql_statements
 
 default_args = {
-    'owner': 'fs',
+    'owner': 'jay',
     'start_date': datetime(2019, 7, 16),
     'email_on_retry': False,
     'retries': 3,
     'retry_delay': timedelta(minutes=5),
     'catchup': False,
     'depends_on_past': False,
-    'schedule_interval': '@hourly'
+    'schedule_interval': '@hourly',
+    'max_active_runs':1
 }
 
 dag = DAG(

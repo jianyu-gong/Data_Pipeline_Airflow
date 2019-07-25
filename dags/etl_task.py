@@ -13,13 +13,14 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
     'catchup': False,
     'depends_on_past': False,
-    'schedule_interval': '@hourly'
+    'schedule_interval': '@hourly',
+    'max_active_runs':1
 }
 
 dag = DAG(
     'etl_task',
     default_args=default_args,
-    description='Load and transform data in Redshift with Airflow'
+    description='ETL in Redshift with Airflow'
 )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -95,16 +96,9 @@ run_quality_checks = DataQualityOperator(
 
 end_operator = DummyOperator(task_id='stop_execution',  dag=dag)
 
-start_operator >> stage_events_to_redshift
-start_operator >> stage_songs_to_redshift
+start_operator >> [stage_events_to_redshift, stage_songs_to_redshift]
 stage_events_to_redshift >> load_songplays_table
 stage_songs_to_redshift >> load_songplays_table
-load_songplays_table >> load_user_dimension_table
-load_songplays_table >> load_song_dimension_table
-load_songplays_table >> load_artist_dimension_table
-load_songplays_table >> load_time_dimension_table
-load_user_dimension_table >> run_quality_checks
-load_song_dimension_table >> run_quality_checks
-load_artist_dimension_table >> run_quality_checks
-load_time_dimension_table >> run_quality_checks
+load_songplays_table >> [load_user_dimension_table,load_song_dimension_table, load_artist_dimension_table, load_time_dimension_table]
+[load_user_dimension_table,load_song_dimension_table, load_artist_dimension_table, load_time_dimension_table] >> run_quality_checks
 run_quality_checks >> end_operator

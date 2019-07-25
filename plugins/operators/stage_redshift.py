@@ -5,8 +5,7 @@ from airflow.contrib.hooks.aws_hook import AwsHook
 
 class StageToRedshiftOperator(BaseOperator):
     ui_color = '#358140'
-    copy_sql = 
-    """
+    copy_sql = """
         COPY {}
         FROM '{}'
         ACCESS_KEY_ID '{}'
